@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Trading Desk — Daily Briefings</title>
+<style>
+  :root { --bg:#0b0e14; --card:#141924; --line:#242c3a; --fg:#e6e9ef; --mut:#8b95a7; --acc:#4f9dff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  header { padding:32px 24px 16px; border-bottom:1px solid var(--line); }
+  h1 { margin:0 0 6px; font-size:24px; letter-spacing:-.4px; }
+  .sub { color:var(--mut); font-size:13px; }
+  .note { margin:16px 24px 0; padding:12px 14px; background:#1a2130; border:1px solid var(--line);
+           border-radius:8px; color:var(--mut); font-size:12.5px; }
+  main { max-width:900px; margin:0 auto; padding:8px 24px 48px; }
+  .day h2 { font-size:15px; color:var(--mut); font-weight:600; margin:28px 0 12px;
+             text-transform:uppercase; letter-spacing:.5px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
+  .brief { display:flex; flex-direction:column; gap:6px; padding:16px; text-decoration:none;
+            background:var(--card); border:1px solid var(--line); border-radius:10px; color:var(--fg);
+            transition:border-color .15s, transform .15s; }
+  .brief:hover { border-color:var(--acc); transform:translateY(-2px); }
+  .list { font-weight:600; font-size:15px; }
+  .ts { color:var(--mut); font-size:12px; font-variant-numeric:tabular-nums; }
+  footer { color:var(--mut); font-size:12px; text-align:center; padding:24px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Daily Briefings</h1>
+  <div class="sub">Three-pillar watchlist scans · newest first</div>
+</header>
+<div class="note">Sanitized public view — ticker analysis &amp; pillar scores only.
+  No account numbers, positions, or dollar figures. The full book, proposals, and
+  ledger stay in the private repo and are reviewed locally.</div>
+<main>
+    <section class="day">
+      <h2>2026-07-07</h2>
+      <div class="grid">
+      <a class="brief" href="briefings/2026-07-07/briefing_firstlist_2026-07-07T1948PDT.html">
+        <span class="list">My First List</span>
+        <span class="ts">2026-07-07T1948PDT</span>
+      </a>
+      <a class="brief" href="briefings/2026-07-07/briefing_top100_2026-07-07T1948PDT.html">
+        <span class="list">Top-100 Watchlist</span>
+        <span class="ts">2026-07-07T1948PDT</span>
+      </a>
+      </div>
+    </section>
+</main>
+<footer>Generated 2026-07-07 19:48 · agentic-trading-desk</footer>
+</body>
+</html>
