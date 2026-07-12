@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>How This Trading Desk Works — Explained Simply</title>
+<style>
+  :root { --bg:#0b0e14; --card:#141924; --line:#242c3a; --fg:#e6e9ef; --mut:#8b95a7; --acc:#4f9dff; --good:#3ecf8e; --bad:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  header { padding:32px 24px 16px; border-bottom:1px solid var(--line); }
+  h1 { margin:0 0 6px; font-size:26px; letter-spacing:-.4px; }
+  .sub { color:var(--mut); font-size:13px; }
+  .back { display:inline-block; margin-top:14px; color:var(--acc); text-decoration:none; font-size:13px; }
+  .back:hover { text-decoration:underline; }
+  main { max-width:760px; margin:0 auto; padding:8px 24px 64px; }
+  .tldr { margin:20px 0; padding:16px 18px; background:#16233a; border:1px solid #2a4a7a;
+          border-radius:10px; font-size:14px; }
+  .tldr b { color:var(--acc); }
+  section { margin:40px 0; }
+  h2 { font-size:20px; margin:0 0 4px; color:var(--fg); border-bottom:1px solid var(--line); padding-bottom:10px; }
+  h3 { font-size:16px; margin:24px 0 8px; color:var(--acc); }
+  h4 { font-size:14.5px; margin:20px 0 6px; }
+  p { margin:8px 0; color:var(--fg); }
+  .why { color:var(--mut); }
+  .compare { margin:10px 0; padding:10px 14px; background:var(--card); border-left:3px solid var(--acc);
+             border-radius:6px; font-size:14px; color:var(--mut); }
+  .compare b { color:var(--fg); }
+  code, pre { background:#1a2130; border:1px solid var(--line); border-radius:6px; color:#c9d6ea; }
+  code { padding:2px 6px; font-size:13px; }
+  pre { padding:12px 14px; overflow-x:auto; font-size:13px; }
+  ul, ol { padding-left:22px; }
+  li { margin:6px 0; }
+  table { width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { color:var(--mut); font-weight:600; }
+  .card-demo { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:14px 0; }
+  .card-demo .row { display:flex; justify-content:space-between; padding:4px 0; font-size:13.5px; }
+  .card-demo .row span:first-child { color:var(--mut); }
+  hr { border:none; border-top:1px solid var(--line); margin:0; }
+  .glossary td:first-child { color:var(--acc); font-weight:600; white-space:nowrap; }
+  footer { color:var(--mut); font-size:12px; text-align:center; padding:24px; border-top:1px solid var(--line); }
+  footer a { color:var(--acc); text-decoration:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>How This Trading Desk Works — Explained Simply</h1>
+  <div class="sub">No finance background needed · plain English, everyday comparisons</div>
+  <a class="back" href="index.html">&larr; Back to daily briefings</a>
+</header>
+<main>
+
+  <div class="tldr">
+    <b>TL;DR:</b> Every morning the system shortlists ~25 good-quality stocks out of ~120 candidates,
+    scores each one on three simple questions, and writes up a suggestion card.
+    <b>It never buys or sells anything by itself</b> — a human always has to say "yes, go ahead" first.
+  </div>
+
+  <section>
+    <h2>The Big Picture</h2>
+    <p>Think of this system as a very fast, very disciplined research assistant. Every trading day it:</p>
+    <ol>
+      <li><b>Shortlists stocks worth watching</b> — like a scout filtering 120 job applicants down to 25 worth interviewing.</li>
+      <li><b>Scores each one</b> on three simple questions — is it going up? is it speeding up or slowing down? does the overall market feel good or bad today?</li>
+      <li><b>Writes suggestion cards</b> — "Consider buying AAPL, here's why, here's how much, here's when to bail out."</li>
+      <li><b>Sometimes suggests an options trade</b> — a higher-risk, higher-reward side bet, only on unusually strong days.</li>
+    </ol>
+    <p>The assistant never signs the check. Every suggestion sits and waits for a human to approve it.</p>
+  </section>
+
+  <section>
+    <h2>Part 1 — How Stocks Are Picked</h2>
+
+    <h3>Too Many Candidates to Check by Hand</h3>
+    <p>Each morning there are roughly <b>120 stocks</b> worth a look (from Robinhood's "Most Popular" and "Daily Movers" lists).
+    Checking all 120 in detail would be slow and mostly wasted effort — most will get rejected anyway.
+    So the system runs four quick, cheap checks first, like a bouncer checking IDs before anyone gets a full interview inside.</p>
+
+    <h4>Filter 1 — Price must be above $15</h4>
+    <p>Very cheap "penny stocks" often have a wide gap between the buy price and the sell price, quietly eating your money
+    the moment you trade — even before the stock moves at all.</p>
+    <div class="compare"><b>Everyday comparison:</b> a currency booth that buys dollars at 95¢ and sells at $1.05 —
+    you lose money just walking in and out. Cheap stocks behave the same way.</div>
+
+    <h4>Filter 2 — Must trade at least $100 million a day</h4>
+    <p>We only want stocks a <i>lot</i> of people are actively trading, so we can get in and out without our own order moving the price.</p>
+    <div class="compare"><b>Everyday comparison:</b> selling one raffle ticket in a stadium of 50,000 doesn't move ticket prices.
+    Selling one ticket when only 10 people are in the room might. We stick to the "stadium" stocks.</div>
+
+    <h4>Filter 3 — Be careful with big movers</h4>
+    <p>A stock that dropped but is still fundamentally healthy might be a bargain. A stock that jumped
+    more than 15% in a single day has probably already had its easy money made — buying now often means buying at the top.</p>
+    <div class="compare"><b>Everyday comparison:</b> a flash sale crowd rushing a store the moment doors open — by the time
+    you hear about it, the good deals are already gone.</div>
+
+    <h4>Filter 4 — Rank what's left, keep the top 25</h4>
+    <p>Everything that survives Filters 1–3 gets a "quality score":</p>
+    <pre>Quality Score = (How much money trades daily) × (How much it swings in price)
+                ÷ (How wild it is vs. the overall market)</pre>
+    <div class="compare"><b>Everyday comparison:</b> ranking used cars by (mileage they can still cover) × (how fun they are
+    to drive) ÷ (how likely they are to break down). We want stocks that are active and interesting, but not reckless.</div>
+    <p>Only the top 25 make the daily watchlist.</p>
+
+    <h3>Your Current Holdings Always Get Checked</h3>
+    <p>If you already own a stock, it's automatically added to today's list — even if it fails every filter above.
+    The question for something you already own isn't "should I buy this?", it's "should I sell, trim, or hold?" —
+    and that needs answering every day, filters or not.</p>
+  </section>
+
+  <section>
+    <h2>Part 2 — How a Stock Gets Its Score</h2>
+    <p>Every stock on the watchlist gets asked three yes/no-ish questions, each worth <b>-2 to +2 points</b>:</p>
+
+    <h4>Question 1 — "Trend": Is it going up?</h4>
+    <p>Checks whether the recent average price is above the longer-term average, and whether that gap is widening.</p>
+    <div class="compare"><b>Everyday comparison:</b> is a runner's pace over the last mile faster than their pace over
+    the last 10 miles, and is the gap growing? That's an accelerating uptrend.</div>
+
+    <h4>Question 2 — "Momentum": Speeding up or running out of steam?</h4>
+    <p>Standard trading gauges (RSI, MACD, TRIX — just names for dashboard dials) measure whether a price move
+    still has energy left, or is stalling.</p>
+    <div class="compare"><b>Everyday comparison:</b> a speedometer tells you how fast you're going right now;
+    momentum tools tell you whether you're still accelerating or coasting toward a stop.</div>
+
+    <h4>Question 3 — "Macro Sentiment": Does the whole market feel good or bad today?</h4>
+    <p>Broad market mood: how nervous investors are (a "fear gauge" called VIX), whether most stocks are up or down today,
+    and a few other economy-wide signals — pulled from one trusted news source, never from betting markets strangers could manipulate.</p>
+    <div class="compare"><b>Everyday comparison:</b> even a great restaurant does badly on a night the whole town loses
+    power. This checks whether "the whole town" (the market) is having a good day.</div>
+
+    <h3>Adding It Up: -6 to +6</h3>
+    <table>
+      <tr><th>Total Score</th><th>What it means</th></tr>
+      <tr><td><b>+6</b></td><td>All three questions say yes strongly — everything lines up.</td></tr>
+      <tr><td><b>+4 to +5</b></td><td>Most signs point up — a solid setup.</td></tr>
+      <tr><td><b>~0</b></td><td>Mixed signals — no clear read.</td></tr>
+      <tr><td><b>-4 or lower</b></td><td>Most signs point down — avoid or consider selling.</td></tr>
+    </table>
+
+    <h3>The Score Isn't the Whole Story</h3>
+    <p>A high score alone doesn't trigger a suggestion. The system also watches for <b>patterns of change</b>:</p>
+    <ul>
+      <li><b>Running out of gas:</b> great run, now showing tiredness → consider selling</li>
+      <li><b>Turning sour:</b> score was positive, just flipped negative → consider selling</li>
+      <li><b>Bouncing back:</b> score was very negative, now recovering → consider buying</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Part 3 — The Suggestion Cards</h2>
+    <p>Each morning, for stocks worth acting on, the system writes a one-page suggestion card:</p>
+    <div class="card-demo">
+      <div class="row"><span>Symbol</span><span>AAPL</span></div>
+      <div class="row"><span>Score</span><span>+4 — strong trend &amp; momentum, market mood uncertain</span></div>
+      <div class="row"><span>Size</span><span>Small</span></div>
+      <div class="row"><span>Entry price</span><span>try buying here</span></div>
+      <div class="row"><span>Stop price</span><span>get out if wrong</span></div>
+      <div class="row"><span>Target price</span><span>happy to sell here</span></div>
+    </div>
+    <p>Nothing on the card gets executed — it just sits there until you say so.</p>
+
+    <h3>How Much Money Goes Into One Trade</h3>
+    <p>Simple rule: <b>never risk more than 1.5% of your account on any single trade.</b></p>
+    <div class="compare"><b>Everyday comparison:</b> if you have $100 for a whole night at a casino, you don't put $50
+    on one hand of blackjack. Size each bet so one bad outcome doesn't wreck your night.</div>
+    <p><b>Worked example:</b> $100,000 account → max $1,500 at risk per trade. Buying at $100 with a $95 bail-out price
+    (risking $5/share) ≈ 300 shares.</p>
+
+    <h3>The Total Risk Ceiling ("Portfolio Heat")</h3>
+    <p>Beyond single trades, total risk across everything owned at once is capped — currently at 12% of the account.</p>
+    <div class="compare"><b>Everyday comparison:</b> one bad bet is annoying. Ten bad bets at once, because you were
+    "all in" everywhere, is how people actually go broke. This cap prevents that pile-up.</div>
+  </section>
+
+  <section>
+    <h2>Part 4 — When Options Are Suggested</h2>
+    <h3>What's an Option, in Plain English?</h3>
+    <p>Buying a stock means owning a slice of a company. Buying a <b>call option</b> instead means buying a
+    <b>coupon that lets you purchase the stock at a fixed price later</b>, for a much smaller upfront cost — but the
+    coupon expires, and if the stock doesn't move enough in time, it becomes worthless.</p>
+    <div class="compare"><b>Everyday comparison:</b> paying a small deposit today to lock in today's price on a big
+    purchase, with the right (not obligation) to buy later. If the price surges before the deposit expires, you win
+    big for a small upfront cost. If it doesn't move, you lose only the deposit.</div>
+
+    <h3>When Do We Suggest One?</h3>
+    <p>Only on unusually strong days — all three scoring questions firing at once (total score +4 or higher)
+    <i>and</i> spare money left in the day's budget after the regular stock suggestions.</p>
+
+    <h3>What Kind, and How We Manage It</h3>
+    <ul>
+      <li>Only a <b>call option betting the stock goes up</b></li>
+      <li>Roughly 5–8 weeks to expiry — enough time to play out, not so much you're paying for time you don't need</li>
+      <li>Needs a real price move to pay off, not a 1% wiggle — no betting on noise</li>
+      <li>Only options that are easy to get in and out of</li>
+      <li>Among qualifiers, the one most sensitive to the stock's price (biggest bang for the buck if right)</li>
+    </ul>
+    <p><b>Exit rules:</b> take the win at +100% value, cut the loss at -50%, get out if the strong-day signal
+    disappears, get out within about a week of expiry.</p>
+
+    <h3>Important: You Place These Yourself</h3>
+    <p>The system <b>never buys or sells an options contract</b>. It proposes the idea and shows the math
+    (worst-case loss, break-even point, rough odds of success). Like it → place it yourself in your own account.
+    Don't like it → skip it, no harm done.</p>
+  </section>
+
+  <section>
+    <h2>Part 5 — The Safety Rails</h2>
+    <p>Even with a strong signal, the system runs on brakes, not just an accelerator:</p>
+    <ol>
+      <li><b>Per-trade cap:</b> never more than 1.5% of the account at risk on one idea</li>
+      <li><b>Total risk cap:</b> never more than 12% of the account at risk across everything at once</li>
+      <li><b>"Bad day" shutoff:</b> unusually scary market or a rough account stretch → stop suggesting new buys, just watch</li>
+      <li><b>Automatic bail-out price</b> on every trade, agreed upfront rather than hoped for later</li>
+      <li><b>No industry pile-up:</b> limits on how much can concentrate in a single sector at once</li>
+    </ol>
+    <h3>Positions That Are Off-Limits for Selling</h3>
+    <p>Some holdings are marked "protected" — long-term positions kept no matter what. The system tracks them for
+    information only and will <b>never</b> suggest selling them, no matter how the score looks.</p>
+  </section>
+
+  <section>
+    <h2>Part 6 — The Whole Day in One Paragraph</h2>
+    <p>Every morning: shortlist ~120 candidates down to ~25 (plus anything already owned), score each one on
+    trend / momentum / market mood, look for patterns of change, write suggestion cards for anything actionable,
+    occasionally add an options idea on an unusually strong day, and save everything to a private log.
+    <b>Nothing gets bought or sold until a human reads the card and says yes.</b></p>
+    <p class="why">Why cards instead of full autopilot? Finding a good opportunity is most of the work — but knowing
+    when to walk away from a mediocre one, and staying calm when something unexpected happens, is a human judgment
+    call. This system does the finding; a human keeps the final say.</p>
+  </section>
+
+  <section>
+    <h2>Quick Glossary</h2>
+    <table class="glossary">
+      <tr><td>Ticker / Symbol</td><td>The short code for a stock, like AAPL for Apple</td></tr>
+      <tr><td>ADV (dollar volume)</td><td>How much money changes hands trading a stock in a day</td></tr>
+      <tr><td>Beta</td><td>How wildly a stock swings compared to the overall market</td></tr>
+      <tr><td>Volatility</td><td>How much a price bounces around</td></tr>
+      <tr><td>RSI, MACD, TRIX</td><td>Names of standard "speedometer" dials that measure momentum</td></tr>
+      <tr><td>VIX</td><td>A "market fear gauge" — high VIX means investors are nervous</td></tr>
+      <tr><td>Stop price</td><td>The price at which you admit a trade isn't working and exit</td></tr>
+      <tr><td>Call option</td><td>A coupon to buy a stock at a fixed price later, for a small upfront cost</td></tr>
+      <tr><td>Delta</td><td>How sensitive an option's price is to the stock's price</td></tr>
+      <tr><td>DTE</td><td>"Days to expiry" — days left before an option coupon expires</td></tr>
+      <tr><td>Premium</td><td>The upfront cost of an option coupon</td></tr>
+      <tr><td>Portfolio heat</td><td>Total risk carried across every open position at once</td></tr>
+    </table>
+  </section>
+
+</main>
+<footer>
+  Sanitized public view · no account numbers, positions, or dollar figures ·
+  <a href="index.html">Back to daily briefings</a>
+</footer>
+</body>
+</html>
