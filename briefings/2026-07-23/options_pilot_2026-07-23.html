@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>OPTIONS PILOT — VYM: SKIP (no candidate passes liquidity + cost)</title><style>
+body{font:14px -apple-system,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:6px 8px}
+.ok{color:#0a7d33;font-weight:600}.bad{color:#b00020;font-weight:600}
+.warn{background:#fff3cd;padding:10px;border-radius:6px}
+h1{font-size:1.2rem}</style></head><body>
+<h1>OPTIONS PILOT — VYM: SKIP (no candidate passes liquidity + cost)</h1><p>as of 2026-07-23 · pillar score 4.0 ·
+premium cap none (manual external purchase)</p>
+<table><tr><th>gate</th><th>result</th><th>detail</th></tr><tr><td>signal</td><td class='ok'>PASS</td><td>score=4.0 (need >= 4.0)</td></tr><tr><td>frequency</td><td class='ok'>PASS</td><td>open=0/1 cycle=0/2</td></tr><tr><td>tenor</td><td class='ok'>PASS</td><td>7 call(s) in 35-60 DTE</td></tr><tr><td>moneyness</td><td class='ok'>PASS</td><td>4 candidate(s) (delta 0.25-0.5)</td></tr><tr><td>liquidity</td><td class='bad'>FAIL</td><td>best candidate 163.0C: OI=4 (need >= 100), spread=3.00 (limit 0.25)</td></tr><tr><td>cost</td><td class='ok'>PASS</td><td>best candidate premium $400.00 vs no cap</td></tr></table>
+
+<p><small>Pilot rides the three-pillar strong-day signal. Long calls only,
+defined risk = premium. Execution is manual in an external account —
+the desk places no option orders.</small></p></body></html>
