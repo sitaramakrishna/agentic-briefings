@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Trading Calendar</title>
+<style>
+  :root{
+    --bg:#0b0e14; --card:#141924; --line:#242c3a; --fg:#e6e9ef; --mut:#8b95a7; --acc:#4f9dff;
+    --up:#34d399; --up-bg:#0e2a1e; --up-line:#1d5540;
+    --dn:#f87171; --dn-bg:#2a1417; --dn-line:#5b2328;
+    --flat:#161c28;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  a{color:var(--acc)}
+  main{max-width:1120px;margin:0 auto;padding:24px 16px 56px}
+  .crumb{font-size:13px;color:var(--mut);margin-bottom:20px}
+
+  .bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .bar h1{margin:0;font-size:20px;letter-spacing:-.3px;font-weight:650}
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;gap:4px}
+  .seg button{appearance:none;border:0;background:transparent;color:var(--mut);font:inherit;font-size:13.5px;
+              font-weight:600;padding:7px 18px;border-radius:7px;cursor:pointer;transition:.15s}
+  .seg button[aria-selected="true"]{background:var(--up);color:#06231a}
+  .nav{margin-left:auto;display:flex;align-items:center;gap:14px}
+  .nav button{appearance:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);
+              background:var(--card);color:var(--fg);font-size:16px;cursor:pointer;transition:.15s}
+  .nav button:hover:not(:disabled){border-color:var(--acc)}
+  .nav button:disabled{opacity:.3;cursor:default}
+  .month{min-width:180px;text-align:center;font-weight:650;font-size:16px}
+
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .dow{text-align:center;font-size:11px;letter-spacing:.8px;color:var(--mut);font-weight:600;
+       padding:12px 0;background:var(--card);border:1px solid var(--line);border-radius:9px}
+  .cell{min-width:0;overflow:hidden;min-height:104px;border:1px solid var(--line);border-radius:11px;
+        background:var(--flat);padding:10px;display:flex;flex-direction:column;gap:2px}
+  .dhead{display:flex;align-items:baseline;justify-content:space-between;gap:4px;min-width:0}
+  .cell.pad{background:transparent;border-color:transparent}
+  .cell .dnum{font-size:14px;font-weight:650;color:var(--mut)}
+  .cell.has .dnum{color:var(--fg)}
+  .cell.up{background:var(--up-bg);border-color:var(--up-line)}
+  .cell.dn{background:var(--dn-bg);border-color:var(--dn-line)}
+  .cell.act{cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .cell.act:hover{transform:translateY(-2px);box-shadow:0 6px 18px #0006}
+  .cell.sel{outline:2px solid var(--acc);outline-offset:1px}
+  .amt{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:auto;
+       white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cell.up .amt{color:var(--up)} .cell.dn .amt{color:var(--dn)}
+  .sub{font-size:11.5px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+  .chip{font-size:10.5px;font-weight:650;padding:2px 6px;border-radius:5px;
+        background:#1e2736;border:1px solid var(--line);color:#c6cfdd}
+  .chip.b{background:#10291f;border-color:var(--up-line);color:var(--up)}
+  .chip.s{background:#2a1417;border-color:var(--dn-line);color:var(--dn)}
+  .pend{font-size:9.5px;letter-spacing:.4px;color:var(--acc);font-weight:700;white-space:nowrap}
+  .cmp{display:none}
+
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .tile .k{font-size:11px;letter-spacing:.6px;color:var(--mut);text-transform:uppercase;font-weight:600}
+  .tile .v{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px}
+  .g{color:var(--up)} .r{color:var(--dn)}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:6px}
+  .panel h3{margin:0 0 4px;font-size:15px}
+  .panel .when{color:var(--mut);font-size:12.5px;margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);
+     font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td{padding:7px 8px;font-size:13.5px;border-bottom:1px solid #1b2230}
+  td.num{text-align:right}
+  tr:last-child td{border-bottom:0}
+  .empty{color:var(--mut);font-size:13.5px}
+  .method{margin-top:24px;background:#131826;border:1px solid var(--line);border-radius:11px;
+          padding:16px 18px;color:var(--mut);font-size:12.5px;line-height:1.65}
+  .method b{color:var(--fg)}
+  .method ul{margin:8px 0 0;padding-left:18px}
+  footer{color:var(--mut);font-size:12px;text-align:center;padding:28px 0 0}
+  @media(max-width:720px){
+    main{padding:16px 10px 40px}
+    .cell{min-height:74px;padding:5px;border-radius:8px;gap:1px}
+    .cell .dnum{font-size:11px}
+    .amt{font-size:11.5px} .sub{font-size:9px} .pend{font-size:7.5px}
+    .dow{font-size:9px;padding:7px 0;border-radius:7px}
+    .cal{gap:4px} .nav{width:100%;margin-left:0;justify-content:space-between}
+    .posw{display:none}
+    .chip{font-size:9px;padding:1px 4px}
+    .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tile .v{font-size:17px}
+  }
+  @media(max-width:520px){
+    .full{display:none} .cmp{display:inline}
+    .amt{font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="crumb"><a href="index.html">&larr; Daily Briefings</a></div>
+
+  <div class="bar">
+    <h1>Trading Calendar</h1>
+    <div class="seg" role="tablist">
+      <button id="tPnl" role="tab" aria-selected="true">PNL</button>
+      <button id="tEvt" role="tab" aria-selected="false">Events</button>
+    </div>
+    <div class="nav">
+      <button id="prev" aria-label="Previous month">&larr;</button>
+      <div class="month" id="mLabel"></div>
+      <button id="next" aria-label="Next month">&rarr;</button>
+    </div>
+  </div>
+
+  <div class="cal" id="cal"></div>
+  <div class="tiles" id="tiles"></div>
+  <div class="panel" id="panel"></div>
+
+  <div class="method">
+    <b>How this is computed.</b> Every BUY the desk published is replayed as a paper trade filled at the
+    <b>next session's open</b>, weighted exactly as the allocator sized it, and marked to the close each
+    session thereafter. Nothing is sold: the system is a dollar-cost accumulator, and protected names are
+    never exited.
+    <ul>
+      <li>The book is scaled so total capital deployed over the whole window equals a notional
+          <b>$10,000</b>. Percentages are unchanged; no real account size, NAV or position is shown.</li>
+      <li>A day's <b>P&amp;L</b> is the mark-to-market change of every open paper position that session.
+          <b>Win%</b> is the share of those positions that closed green.</li>
+      <li>Days marked <b>PENDING</b> carry a published signal with no settled price yet.</li>
+      <li>Gaps in the price cache are carried forward, so a stale name contributes $0 rather than a phantom move.</li>
+    </ul>
+    Hypothetical results from published signals. Not investment advice, and not a record of executed trades.
+  </div>
+
+  <footer>Prices through 2026-09-15 &middot; built 2026-09-17</footer>
+</main>
+
+<script>
+const D = {"as_of":"2026-09-16","last_px":"2026-09-15","notional":10000.0,"rows":[{"d":"2026-07-07","pnl":1.69,"win":50,"n":2,"eq":722.68,"cost":720.99,"open":1.69,"ret":0.24,"det":[{"s":"XOM","p":8.14,"r":2.26},{"s":"BA","p":-6.45,"r":-1.79}]},{"d":"2026-07-08","pnl":-11.74,"win":0,"n":2,"eq":710.94,"cost":720.99,"open":-10.05,"ret":-1.39,"det":[{"s":"XOM","p":-1.46,"r":-0.4},{"s":"BA","p":-10.28,"r":-2.9}]},{"d":"2026-07-09","pnl":-12.36,"win":0,"n":2,"eq":698.58,"cost":720.99,"open":-22.41,"ret":-3.11,"det":[{"s":"BA","p":-2.81,"r":-0.82},{"s":"XOM","p":-9.55,"r":-2.6}]},{"d":"2026-07-10","pnl":10.03,"win":50,"n":4,"eq":1605.39,"cost":1617.77,"open":-12.38,"ret":-0.77,"det":[{"s":"AMD","p":10.63,"r":2.55},{"s":"XOM","p":3.69,"r":1.03},{"s":"BA","p":-1.27,"r":-0.37},{"s":"BA","p":-3.03,"r":-0.63}]},{"d":"2026-07-13","pnl":-28.23,"win":25,"n":4,"eq":1577.16,"cost":1617.77,"open":-40.6,"ret":-2.51,"det":[{"s":"XOM","p":14.65,"r":4.05},{"s":"BA","p":-10.35,"r":-3.05},{"s":"BA","p":-14.54,"r":-3.05},{"s":"AMD","p":-17.99,"r":-4.21}]},{"d":"2026-07-14","pnl":17.91,"win":100,"n":4,"eq":1595.07,"cost":1617.77,"open":-22.7,"ret":-1.4,"det":[{"s":"AMD","p":10.52,"r":2.57},{"s":"BA","p":3.44,"r":0.74},{"s":"BA","p":2.45,"r":0.74},{"s":"XOM","p":1.51,"r":0.4}]},{"d":"2026-07-15","pnl":-12.33,"win":50,"n":4,"eq":1582.74,"cost":1617.77,"open":-35.03,"ret":-2.17,"det":[{"s":"BA","p":2.17,"r":0.47},{"s":"BA","p":1.54,"r":0.47},{"s":"XOM","p":-1.51,"r":-0.4},{"s":"AMD","p":-14.54,"r":-3.46}]},{"d":"2026-07-16","pnl":-31.73,"win":25,"n":4,"eq":1551.0,"cost":1617.77,"open":-66.77,"ret":-4.13,"det":[{"s":"XOM","p":3.75,"r":1.0},{"s":"BA","p":-5.78,"r":-1.73},{"s":"BA","p":-8.12,"r":-1.73},{"s":"AMD","p":-21.59,"r":-5.33}]},{"d":"2026-07-17","pnl":-6.01,"win":20,"n":5,"eq":2163.97,"cost":2236.75,"open":-72.78,"ret":-3.25,"det":[{"s":"XOM","p":3.67,"r":0.97},{"s":"BA","p":-0.47,"r":-0.14},{"s":"BA","p":-0.67,"r":-0.14},{"s":"AMD","p":-3.97,"r":-1.03},{"s":"MRK","p":-4.58,"r":-0.74}]},{"d":"2026-07-20","pnl":-23.08,"win":40,"n":5,"eq":2140.89,"cost":2236.75,"open":-95.86,"ret":-4.29,"det":[{"s":"AMD","p":5.98,"r":1.58},{"s":"XOM","p":2.6,"r":0.68},{"s":"BA","p":-6.95,"r":-2.13},{"s":"BA","p":-9.77,"r":-2.13},{"s":"MRK","p":-14.94,"r":-2.43}]},{"d":"2026-07-21","pnl":31.76,"win":60,"n":5,"eq":2172.64,"cost":2236.75,"open":-64.1,"ret":-2.87,"det":[{"s":"AMD","p":31.28,"r":8.11},{"s":"MRK","p":8.96,"r":1.5},{"s":"XOM","p":8.72,"r":2.26},{"s":"BA","p":-7.15,"r":-2.23},{"s":"BA","p":-10.05,"r":-2.23}]},{"d":"2026-07-22","pnl":33.16,"win":100,"n":5,"eq":2205.8,"cost":2236.75,"open":-30.95,"ret":-1.38,"det":[{"s":"BA","p":8.27,"r":1.88},{"s":"XOM","p":7.13,"r":1.81},{"s":"AMD","p":6.05,"r":1.45},{"s":"BA","p":5.88,"r":1.88},{"s":"MRK","p":5.83,"r":0.96}]},{"d":"2026-07-23","pnl":13.31,"win":80,"n":5,"eq":2219.11,"cost":2236.75,"open":-17.64,"ret":-0.79,"det":[{"s":"MRK","p":14.5,"r":2.36},{"s":"XOM","p":6.35,"r":1.58},{"s":"BA","p":1.25,"r":0.28},{"s":"BA","p":0.89,"r":0.28},{"s":"AMD","p":-9.68,"r":-2.29}]},{"d":"2026-07-24","pnl":-9.54,"win":80,"n":5,"eq":2209.57,"cost":2236.75,"open":-27.18,"ret":-1.22,"det":[{"s":"MRK","p":2.84,"r":0.45},{"s":"BA","p":0.62,"r":0.14},{"s":"BA","p":0.44,"r":0.14},{"s":"XOM","p":0.13,"r":0.03},{"s":"AMD","p":-13.58,"r":-3.29}]},{"d":"2026-07-27","pnl":-20.53,"win":40,"n":5,"eq":2189.04,"cost":2236.75,"open":-47.71,"ret":-2.13,"det":[{"s":"BA","p":4.25,"r":0.95},{"s":"BA","p":3.03,"r":0.95},{"s":"MRK","p":-1.49,"r":-0.24},{"s":"XOM","p":-5.65,"r":-1.38},{"s":"AMD","p":-20.67,"r":-5.17}]},{"d":"2026-07-28","pnl":-5.9,"win":40,"n":5,"eq":2802.12,"cost":2855.73,"open":-53.61,"ret":-1.88,"det":[{"s":"BA","p":21.6,"r":4.76},{"s":"BA","p":15.37,"r":4.76},{"s":"XOM","p":-4.5,"r":-1.12},{"s":"JNJ","p":-7.5,"r":-1.21},{"s":"AMD","p":-30.87,"r":-8.15}]},{"d":"2026-07-29","pnl":-40.03,"win":20,"n":5,"eq":2762.09,"cost":2855.73,"open":-93.64,"ret":-3.28,"det":[{"s":"XOM","p":9.65,"r":2.42},{"s":"JNJ","p":-2.75,"r":-0.45},{"s":"BA","p":-11.54,"r":-3.41},{"s":"BA","p":-16.21,"r":-3.41},{"s":"AMD","p":-19.18,"r":-5.51}]},{"d":"2026-07-30","pnl":46.38,"win":80,"n":5,"eq":2808.46,"cost":2855.73,"open":-47.26,"ret":-1.66,"det":[{"s":"AMD","p":42.74,"r":13.0},{"s":"BA","p":14.79,"r":3.22},{"s":"BA","p":10.53,"r":3.22},{"s":"XOM","p":0.57,"r":0.14},{"s":"JNJ","p":-22.26,"r":-3.66}]},{"d":"2026-07-31","pnl":-27.33,"win":20,"n":5,"eq":2781.13,"cost":2855.73,"open":-74.6,"ret":-2.61,"det":[{"s":"JNJ","p":1.22,"r":0.21},{"s":"XOM","p":-3.98,"r":-0.97},{"s":"AMD","p":-7.07,"r":-1.9},{"s":"BA","p":-7.27,"r":-2.15},{"s":"BA","p":-10.22,"r":-2.15}]},{"d":"2026-08-03","pnl":1.06,"win":33,"n":3,"eq":2782.19,"cost":2855.73,"open":-73.53,"ret":-2.57,"det":[{"s":"AMD","p":6.5,"r":1.78},{"s":"XOM","p":-0.99,"r":-0.24},{"s":"JNJ","p":-4.45,"r":-0.76}]},{"d":"2026-08-04","pnl":27.36,"win":75,"n":4,"eq":3428.54,"cost":3474.71,"open":-46.17,"ret":-1.33,"det":[{"s":"AMD","p":25.98,"r":7.0},{"s":"AMZN","p":3.05,"r":0.49},{"s":"JNJ","p":1.19,"r":0.2},{"s":"XOM","p":-2.86,"r":-0.71}]},{"d":"2026-08-05","pnl":-38.62,"win":25,"n":4,"eq":3389.91,"cost":3474.71,"open":-84.8,"ret":-2.44,"det":[{"s":"JNJ","p":6.1,"r":1.04},{"s":"XOM","p":-6.06,"r":-1.51},{"s":"AMZN","p":-10.7,"r":-1.72},{"s":"AMD","p":-27.96,"r":-7.04}]},{"d":"2026-08-06","pnl":11.61,"win":50,"n":4,"eq":3401.52,"cost":3474.71,"open":-73.18,"ret":-2.11,"det":[{"s":"XOM","p":8.35,"r":2.12},{"s":"AMD","p":5.53,"r":1.5},{"s":"AMZN","p":-0.87,"r":-0.14},{"s":"JNJ","p":-1.4,"r":-0.24}]},{"d":"2026-08-07","pnl":0.94,"win":50,"n":4,"eq":3402.47,"cost":3474.71,"open":-72.24,"ret":-2.08,"det":[{"s":"JNJ","p":5.18,"r":0.88},{"s":"AMZN","p":4.98,"r":0.82},{"s":"AMD","p":-4.53,"r":-1.21},{"s":"XOM","p":-4.68,"r":-1.16}]},{"d":"2026-08-10","pnl":19.68,"win":60,"n":5,"eq":4041.13,"cost":4093.69,"open":-52.56,"ret":-1.28,"det":[{"s":"XOM","p":17.56,"r":4.41},{"s":"AMZN","p":8.09,"r":1.32},{"s":"JNJ","p":5.89,"r":0.99},{"s":"QQQ","p":-1.3,"r":-0.21},{"s":"AMD","p":-10.56,"r":-2.86}]},{"d":"2026-08-11","pnl":-19.3,"win":43,"n":7,"eq":5259.79,"cost":5331.65,"open":-71.86,"ret":-1.35,"det":[{"s":"AMD","p":3.64,"r":1.01},{"s":"MRVL","p":0.91,"r":0.15},{"s":"XOM","p":0.03,"r":0.01},{"s":"QQQ","p":-2.07,"r":-0.34},{"s":"QQQ","p":-4.14,"r":-0.67},{"s":"JNJ","p":-4.61,"r":-0.77},{"s":"AMZN","p":-13.05,"r":-2.09}]},{"d":"2026-08-12","pnl":20.62,"win":71,"n":7,"eq":5280.41,"cost":5331.65,"open":-51.24,"ret":-0.96,"det":[{"s":"MRVL","p":13.93,"r":2.25},{"s":"AMD","p":6.59,"r":1.82},{"s":"QQQ","p":4.5,"r":0.73},{"s":"QQQ","p":4.49,"r":0.73},{"s":"JNJ","p":2.43,"r":0.41},{"s":"XOM","p":-0.13,"r":-0.03},{"s":"AMZN","p":-11.19,"r":-1.83}]},{"d":"2026-08-13","pnl":24.3,"win":71,"n":7,"eq":5304.71,"cost":5331.65,"open":-26.94,"ret":-0.51,"det":[{"s":"MRVL","p":14.89,"r":2.35},{"s":"QQQ","p":7.17,"r":1.16},{"s":"QQQ","p":7.16,"r":1.16},{"s":"JNJ","p":2.8,"r":0.47},{"s":"AMD","p":0.06,"r":0.02},{"s":"XOM","p":-2.97,"r":-0.71},{"s":"AMZN","p":-4.82,"r":-0.8}]},{"d":"2026-08-14","pnl":16.19,"win":29,"n":7,"eq":5320.9,"cost":5331.65,"open":-10.75,"ret":-0.2,"det":[{"s":"AMD","p":24.02,"r":6.5},{"s":"XOM","p":3.88,"r":0.94},{"s":"MRVL","p":-0.47,"r":-0.07},{"s":"QQQ","p":-0.86,"r":-0.14},{"s":"QQQ","p":-0.86,"r":-0.14},{"s":"JNJ","p":-3.97,"r":-0.66},{"s":"AMZN","p":-5.56,"r":-0.94}]},{"d":"2026-08-17","pnl":40.18,"win":50,"n":8,"eq":5980.07,"cost":5950.63,"open":29.44,"ret":0.49,"det":[{"s":"MRVL","p":35.94,"r":5.54},{"s":"MU","p":7.55,"r":1.22},{"s":"JNJ","p":4.63,"r":0.78},{"s":"XOM","p":3.54,"r":0.85},{"s":"QQQ","p":-1.03,"r":-0.16},{"s":"QQQ","p":-1.03,"r":-0.16},{"s":"AMZN","p":-3.0,"r":-0.51},{"s":"AMD","p":-6.42,"r":-1.63}]},{"d":"2026-08-18","pnl":-108.66,"win":25,"n":8,"eq":5871.41,"cost":5950.63,"open":-79.22,"ret":-1.33,"det":[{"s":"JNJ","p":20.04,"r":3.33},{"s":"XOM","p":10.67,"r":2.54},{"s":"AMZN","p":-4.17,"r":-0.71},{"s":"QQQ","p":-10.58,"r":-1.69},{"s":"QQQ","p":-10.59,"r":-1.69},{"s":"AMD","p":-16.54,"r":-4.27},{"s":"MU","p":-43.96,"r":-7.02},{"s":"MRVL","p":-53.52,"r":-7.82}]},{"d":"2026-08-19","pnl":61.18,"win":38,"n":8,"eq":5932.59,"cost":5950.63,"open":-18.04,"ret":-0.3,"det":[{"s":"MRVL","p":62.1,"r":9.85},{"s":"AMZN","p":14.33,"r":2.46},{"s":"JNJ","p":5.27,"r":0.85},{"s":"QQQ","p":-1.22,"r":-0.2},{"s":"QQQ","p":-1.23,"r":-0.2},{"s":"XOM","p":-2.06,"r":-0.48},{"s":"MU","p":-2.26,"r":-0.39},{"s":"AMD","p":-13.76,"r":-3.71}]},{"d":"2026-08-20","pnl":26.03,"win":50,"n":8,"eq":7803.68,"cost":7795.69,"open":7.99,"ret":0.1,"det":[{"s":"MRVL","p":40.12,"r":5.79},{"s":"MU","p":23.05,"r":3.97},{"s":"XOM","p":3.59,"r":0.84},{"s":"AMD","p":2.32,"r":0.65},{"s":"QQQ","p":-4.41,"r":-0.72},{"s":"QQQ","p":-4.41,"r":-0.72},{"s":"AMZN","p":-12.85,"r":-2.16},{"s":"AMZN","p":-21.38,"r":-1.16}]},{"d":"2026-08-21","pnl":-13.87,"win":43,"n":7,"eq":7789.8,"cost":7795.69,"open":-5.88,"ret":-0.08,"det":[{"s":"AMD","p":2.91,"r":0.81},{"s":"QQQ","p":2.15,"r":0.35},{"s":"QQQ","p":2.15,"r":0.35},{"s":"XOM","p":-2.71,"r":-0.63},{"s":"AMZN","p":-3.32,"r":-0.57},{"s":"MU","p":-4.68,"r":-0.77},{"s":"AMZN","p":-10.38,"r":-0.57}]},{"d":"2026-08-24","pnl":-30.65,"win":29,"n":7,"eq":7759.15,"cost":7795.69,"open":-36.53,"ret":-0.47,"det":[{"s":"AMZN","p":24.12,"r":1.33},{"s":"AMZN","p":7.71,"r":1.33},{"s":"XOM","p":-2.76,"r":-0.64},{"s":"QQQ","p":-6.09,"r":-1.0},{"s":"QQQ","p":-6.1,"r":-1.0},{"s":"AMD","p":-12.64,"r":-3.49},{"s":"MU","p":-34.9,"r":-5.83}]},{"d":"2026-08-25","pnl":93.99,"win":42,"n":12,"eq":7853.15,"cost":7795.69,"open":57.46,"ret":0.74,"det":[{"s":"MRK","p":123.8,"r":19.65},{"s":"AMD","p":17.17,"r":4.91},{"s":"MU","p":13.96,"r":2.48},{"s":"QQQ","p":3.77,"r":0.62},{"s":"QQQ","p":3.77,"r":0.62},{"s":"JNJ","p":-0.62,"r":-0.1},{"s":"AMZN","p":-2.26,"r":-0.39},{"s":"AMZN","p":-7.08,"r":-0.39},{"s":"BA","p":-7.73,"r":-2.34},{"s":"XOM","p":-8.87,"r":-2.08},{"s":"BA","p":-10.87,"r":-2.34},{"s":"MRVL","p":-31.04,"r":-4.23}]},{"d":"2026-08-26","pnl":-13.6,"win":58,"n":12,"eq":7839.55,"cost":7795.69,"open":43.86,"ret":0.56,"det":[{"s":"MRVL","p":13.81,"r":1.97},{"s":"MU","p":3.36,"r":0.58},{"s":"BA","p":2.17,"r":0.48},{"s":"BA","p":1.54,"r":0.48},{"s":"AMD","p":1.34,"r":0.37},{"s":"QQQ","p":0.56,"r":0.09},{"s":"QQQ","p":0.56,"r":0.09},{"s":"AMZN","p":-1.75,"r":-0.3},{"s":"AMZN","p":-5.47,"r":-0.3},{"s":"XOM","p":-6.37,"r":-1.53},{"s":"JNJ","p":-7.2,"r":-1.15},{"s":"MRK","p":-16.14,"r":-2.14}]},{"d":"2026-08-27","pnl":-75.82,"win":17,"n":12,"eq":7763.73,"cost":7795.69,"open":-31.96,"ret":-0.41,"det":[{"s":"QQQ","p":8.35,"r":1.37},{"s":"QQQ","p":8.34,"r":1.37},{"s":"MU","p":-1.86,"r":-0.32},{"s":"AMD","p":-3.26,"r":-0.89},{"s":"BA","p":-3.36,"r":-1.04},{"s":"XOM","p":-4.55,"r":-1.11},{"s":"BA","p":-4.72,"r":-1.04},{"s":"AMZN","p":-9.01,"r":-1.54},{"s":"JNJ","p":-9.7,"r":-1.57},{"s":"MRVL","p":-10.69,"r":-1.49},{"s":"MRK","p":-17.16,"r":-2.33},{"s":"AMZN","p":-28.18,"r":-1.54}]},{"d":"2026-08-28","pnl":3.45,"win":33,"n":12,"eq":7767.18,"cost":7795.69,"open":-28.5,"ret":-0.37,"det":[{"s":"AMZN","p":71.3,"r":3.97},{"s":"AMZN","p":22.8,"r":3.97},{"s":"JNJ","p":5.2,"r":0.85},{"s":"XOM","p":0.7,"r":0.17},{"s":"BA","p":-0.11,"r":-0.03},{"s":"BA","p":-0.15,"r":-0.03},{"s":"MU","p":-1.57,"r":-0.27},{"s":"QQQ","p":-4.01,"r":-0.65},{"s":"QQQ","p":-4.01,"r":-0.65},{"s":"MRK","p":-5.73,"r":-0.8},{"s":"AMD","p":-8.49,"r":-2.33},{"s":"MRVL","p":-72.5,"r":-10.28}]},{"d":"2026-08-31","pnl":-59.92,"win":42,"n":12,"eq":7707.26,"cost":7795.69,"open":-88.42,"ret":-1.13,"det":[{"s":"MU","p":16.02,"r":2.77},{"s":"XOM","p":11.03,"r":2.71},{"s":"AMD","p":3.93,"r":1.1},{"s":"QQQ","p":0.28,"r":0.05},{"s":"QQQ","p":0.28,"r":0.05},{"s":"MRK","p":-2.84,"r":-0.4},{"s":"BA","p":-3.12,"r":-0.97},{"s":"BA","p":-4.38,"r":-0.97},{"s":"JNJ","p":-5.02,"r":-0.82},{"s":"MRVL","p":-14.48,"r":-2.29},{"s":"AMZN","p":-14.93,"r":-2.5},{"s":"AMZN","p":-46.69,"r":-2.5}]},{"d":"2026-09-01","pnl":-74.32,"win":29,"n":14,"eq":8002.11,"cost":8164.85,"open":-162.74,"ret":-1.99,"det":[{"s":"JNJ","p":12.24,"r":2.01},{"s":"MRK","p":10.12,"r":1.42},{"s":"XOM","p":9.37,"r":2.24},{"s":"NVDA","p":0.59,"r":0.32},{"s":"BA","p":-3.24,"r":-1.02},{"s":"MRVL","p":-3.71,"r":-0.6},{"s":"BA","p":-4.55,"r":-1.02},{"s":"QQQ","p":-7.8,"r":-1.27},{"s":"QQQ","p":-7.81,"r":-1.27},{"s":"AMD","p":-8.5,"r":-2.36},{"s":"CRWD","p":-10.47,"r":-5.67},{"s":"AMZN","p":-10.87,"r":-1.87}]},{"d":"2026-09-02","pnl":28.6,"win":69,"n":16,"eq":8211.94,"cost":8346.08,"open":-134.14,"ret":-1.61,"det":[{"s":"MU","p":14.02,"r":2.43},{"s":"JNJ","p":9.22,"r":1.48},{"s":"MRK","p":8.58,"r":1.19},{"s":"BA","p":6.89,"r":1.56},{"s":"NVDA","p":5.94,"r":3.21},{"s":"BA","p":4.91,"r":1.56},{"s":"QQQ","p":1.37,"r":0.23},{"s":"QQQ","p":1.37,"r":0.23},{"s":"AMZN","p":0.42,"r":0.02},{"s":"AMZN","p":0.13,"r":0.02},{"s":"XOM","p":0.12,"r":0.13},{"s":"AAPL","p":-0.53,"r":-0.58}]},{"d":"2026-09-03","pnl":82.53,"win":81,"n":16,"eq":8294.47,"cost":8346.08,"open":-51.62,"ret":-0.62,"det":[{"s":"AMZN","p":27.48,"r":1.54},{"s":"CRWD","p":9.35,"r":5.68},{"s":"AMZN","p":8.79,"r":1.54},{"s":"JNJ","p":7.38,"r":1.17},{"s":"QQQ","p":7.22,"r":1.19},{"s":"QQQ","p":7.21,"r":1.19},{"s":"MRVL","p":6.86,"r":1.14},{"s":"BA","p":3.52,"r":0.79},{"s":"NVDA","p":3.44,"r":1.8},{"s":"MRK","p":3.37,"r":0.46},{"s":"BA","p":2.51,"r":0.79},{"s":"MU","p":1.29,"r":0.22}]},{"d":"2026-09-04","pnl":70.02,"win":50,"n":20,"eq":8583.85,"cost":8565.45,"open":18.4,"ret":0.21,"det":[{"s":"MRVL","p":42.98,"r":7.05},{"s":"MU","p":36.18,"r":6.1},{"s":"AMD","p":16.39,"r":4.69},{"s":"BA","p":3.74,"r":0.83},{"s":"BA","p":2.66,"r":0.83},{"s":"NVDA","p":1.63,"r":0.84},{"s":"QQQ","p":1.11,"r":0.18},{"s":"QQQ","p":1.1,"r":0.18},{"s":"CRWD","p":0.15,"r":0.28},{"s":"JNJ","p":0.02,"r":0.04},{"s":"AMZN","p":-0.87,"r":-0.15},{"s":"PYPL","p":-1.14,"r":-2.08}]},{"d":"2026-09-08","pnl":-29.04,"win":27,"n":22,"eq":8862.32,"cost":8872.96,"open":-10.64,"ret":-0.12,"det":[{"s":"AMD","p":21.56,"r":5.9},{"s":"MRVL","p":5.43,"r":0.83},{"s":"INTC","p":5.36,"r":3.64},{"s":"XOM","p":3.1,"r":0.75},{"s":"TSM","p":1.29,"r":0.81},{"s":"XOM","p":0.66,"r":0.75},{"s":"QQQ","p":-0.51,"r":-0.08},{"s":"QQQ","p":-0.51,"r":-0.08},{"s":"CRWD","p":-0.79,"r":-1.45},{"s":"AAPL","p":-1.04,"r":-1.17},{"s":"JNJ","p":-1.22,"r":-2.22},{"s":"PLTR","p":-1.23,"r":-2.31}]},{"d":"2026-09-09","pnl":-8.89,"win":26,"n":23,"eq":9120.33,"cost":9139.86,"open":-19.53,"ret":-0.21,"det":[{"s":"MRVL","p":28.03,"r":4.26},{"s":"MU","p":17.04,"r":2.75},{"s":"AMD","p":11.75,"r":3.04},{"s":"XOM","p":9.29,"r":2.22},{"s":"INTC","p":2.59,"r":1.69},{"s":"XOM","p":1.97,"r":2.22},{"s":"PLTR","p":-0.23,"r":-0.45},{"s":"AAPL","p":-0.24,"r":-0.28},{"s":"JNJ","p":-0.41,"r":-0.76},{"s":"CRWD","p":-0.57,"r":-1.06},{"s":"PYPL","p":-0.99,"r":-1.9},{"s":"TSM","p":-1.34,"r":-0.83}]},{"d":"2026-09-10","pnl":-116.41,"win":26,"n":23,"eq":9003.92,"cost":9139.86,"open":-135.95,"ret":-1.49,"det":[{"s":"AAPL","p":3.11,"r":3.56},{"s":"XOM","p":2.6,"r":0.61},{"s":"PYPL","p":1.11,"r":2.19},{"s":"CRWD","p":0.86,"r":0.51},{"s":"XOM","p":0.55,"r":0.61},{"s":"CRWD","p":0.27,"r":0.51},{"s":"JNJ","p":-0.15,"r":-0.27},{"s":"JNJ","p":-0.73,"r":-0.27},{"s":"PLTR","p":-1.12,"r":-2.16},{"s":"AMZN","p":-1.14,"r":-0.2},{"s":"JNJ","p":-1.67,"r":-0.27},{"s":"BA","p":-2.48,"r":-0.78}]},{"d":"2026-09-11","pnl":115.39,"win":67,"n":24,"eq":9488.23,"cost":9508.78,"open":-20.55,"ret":-0.22,"det":[{"s":"AMZN","p":34.28,"r":1.94},{"s":"MRVL","p":26.69,"r":4.03},{"s":"BA","p":12.13,"r":2.76},{"s":"AMZN","p":10.96,"r":1.94},{"s":"AMD","p":9.59,"r":2.49},{"s":"BA","p":8.63,"r":2.76},{"s":"QQQ","p":5.3,"r":0.87},{"s":"QQQ","p":5.3,"r":0.87},{"s":"INTC","p":3.83,"r":2.61},{"s":"XOM","p":2.06,"r":0.56},{"s":"XOM","p":1.98,"r":0.46},{"s":"TSM","p":1.92,"r":1.22}]},{"d":"2026-09-14","pnl":-130.73,"win":36,"n":28,"eq":9848.72,"cost":10000.0,"open":-151.28,"ret":-1.51,"det":[{"s":"CRWD","p":23.19,"r":13.85},{"s":"CRWD","p":7.39,"r":13.85},{"s":"MRK","p":4.43,"r":0.64},{"s":"PLTR","p":1.85,"r":3.64},{"s":"JNJ","p":1.7,"r":0.28},{"s":"JNJ","p":0.74,"r":0.28},{"s":"PYPL","p":0.3,"r":0.58},{"s":"AAPL","p":0.22,"r":0.24},{"s":"JNJ","p":0.15,"r":0.28},{"s":"V","p":0.07,"r":0.06},{"s":"BA","p":-0.28,"r":-0.09},{"s":"BA","p":-0.39,"r":-0.09}]},{"d":"2026-09-15","pnl":-8.99,"win":54,"n":28,"eq":9839.73,"cost":10000.0,"open":-160.27,"ret":-1.6,"det":[{"s":"XOM","p":11.03,"r":2.57},{"s":"XOM","p":9.48,"r":2.57},{"s":"MRVL","p":8.41,"r":1.32},{"s":"AMD","p":8.26,"r":2.19},{"s":"CRWD","p":5.76,"r":3.02},{"s":"XOM","p":3.09,"r":2.57},{"s":"XOM","p":2.34,"r":2.57},{"s":"MU","p":2.21,"r":0.39},{"s":"JNJ","p":2.02,"r":0.33},{"s":"CRWD","p":1.83,"r":3.02},{"s":"NVDA","p":1.03,"r":0.57},{"s":"JNJ","p":0.87,"r":0.33}]}],"entries":{"2026-07-07":[{"s":"BA","d":360.49,"px":235.9,"sc":null},{"s":"XOM","d":360.49,"px":138.56,"sc":null}],"2026-07-10":[{"s":"BA","d":480.33,"px":223.69,"sc":4.0},{"s":"AMD","d":416.45,"px":544.0,"sc":2.0}],"2026-07-17":[{"s":"MRK","d":618.98,"px":128.45,"sc":null}],"2026-07-28":[{"s":"JNJ","d":618.98,"px":270.0,"sc":null}],"2026-08-04":[{"s":"AMZN","d":618.98,"px":276.06,"sc":null}],"2026-08-10":[{"s":"QQQ","d":618.98,"px":722.39,"sc":null}],"2026-08-11":[{"s":"QQQ","d":618.98,"px":723.29,"sc":null},{"s":"MRVL","d":618.98,"px":212.0,"sc":null}],"2026-08-17":[{"s":"MU","d":618.98,"px":999.55,"sc":null}],"2026-08-20":[{"s":"AMZN","d":1845.06,"px":263.16,"sc":5.0}],"2026-09-01":[{"s":"CRWD","d":184.58,"px":228.0,"sc":6.0},{"s":"NVDA","d":184.58,"px":216.75,"sc":6.0}],"2026-09-02":[{"s":"AAPL","d":90.62,"px":326.87,"sc":4.0},{"s":"XOM","d":90.62,"px":163.93,"sc":4.0}],"2026-09-04":[{"s":"JNJ","d":54.84,"px":275.13,"sc":4.0},{"s":"PLTR","d":54.84,"px":180.01,"sc":4.0},{"s":"PYPL","d":54.84,"px":56.12,"sc":4.0},{"s":"CRWD","d":54.84,"px":212.5,"sc":4.0}],"2026-09-08":[{"s":"TSM","d":160.19,"px":435.48,"sc":3.0},{"s":"INTC","d":147.32,"px":100.8,"sc":2.0}],"2026-09-09":[{"s":"JNJ","d":266.9,"px":268.51,"sc":5.0}],"2026-09-11":[{"s":"XOM","d":368.91,"px":165.07,"sc":3}],"2026-09-14":[{"s":"XOM","d":122.81,"px":168.7,"sc":3.0},{"s":"V","d":122.81,"px":375.07,"sc":2.0},{"s":"KO","d":122.81,"px":90.0,"sc":2.0},{"s":"JNJ","d":122.81,"px":271.0,"sc":1.0}]},"pending":{"2026-09-16":[{"symbol":"FANG","side":"BUY"},{"symbol":"CRWD","side":"BUY"}],"2026-09-17":[{"symbol":"XOM","side":"BUY"},{"symbol":"QQQ","side":"SELL"}]},"totals":{"pnl":-160.27,"ret":-1.6,"eq":9839.73,"cost":10000.0,"green":24,"red":26,"days":50,"pos":28,"best":{"d":"2026-09-11","pnl":115.39,"win":67,"n":24,"eq":9488.23,"cost":9508.78,"open":-20.55,"ret":-0.22,"det":[{"s":"AMZN","p":34.28,"r":1.94},{"s":"MRVL","p":26.69,"r":4.03},{"s":"BA","p":12.13,"r":2.76},{"s":"AMZN","p":10.96,"r":1.94},{"s":"AMD","p":9.59,"r":2.49},{"s":"BA","p":8.63,"r":2.76},{"s":"QQQ","p":5.3,"r":0.87},{"s":"QQQ","p":5.3,"r":0.87},{"s":"INTC","p":3.83,"r":2.61},{"s":"XOM","p":2.06,"r":0.56},{"s":"XOM","p":1.98,"r":0.46},{"s":"TSM","p":1.92,"r":1.22}]},"worst":{"d":"2026-09-14","pnl":-130.73,"win":36,"n":28,"eq":9848.72,"cost":10000.0,"open":-151.28,"ret":-1.51,"det":[{"s":"CRWD","p":23.19,"r":13.85},{"s":"CRWD","p":7.39,"r":13.85},{"s":"MRK","p":4.43,"r":0.64},{"s":"PLTR","p":1.85,"r":3.64},{"s":"JNJ","p":1.7,"r":0.28},{"s":"JNJ","p":0.74,"r":0.28},{"s":"PYPL","p":0.3,"r":0.58},{"s":"AAPL","p":0.22,"r":0.24},{"s":"JNJ","p":0.15,"r":0.28},{"s":"V","p":0.07,"r":0.06},{"s":"BA","p":-0.28,"r":-0.09},{"s":"BA","p":-0.39,"r":-0.09}]}}};
+const MON = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+const byDate = Object.fromEntries(D.rows.map(r => [r.d, r]));
+const months = [...new Set(D.rows.map(r => r.d.slice(0,7)))].sort();
+Object.keys(D.pending).forEach(d => { const m = d.slice(0,7); if (!months.includes(m)) months.push(m); });
+months.sort();
+let mi = months.length - 1, mode = "pnl", sel = null;
+
+const money = v => (v < 0 ? "-$" : "$") + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0 = v => (v < 0 ? "-$" : "$") + Math.round(Math.abs(v)).toLocaleString("en-US");
+const dual = v => `<span class="full">${money(v)}</span><span class="cmp">${money0(v)}</span>`;
+const el = id => document.getElementById(id);
+
+function draw() {
+  const m = months[mi], [y, mo] = m.split("-").map(Number);
+  el("mLabel").textContent = MON[mo-1] + " " + y;
+  el("prev").disabled = mi === 0;
+  el("next").disabled = mi === months.length - 1;
+
+  const cal = el("cal");
+  cal.innerHTML = DOW.map(d => `<div class="dow">${d}</div>`).join("");
+  const first = new Date(Date.UTC(y, mo-1, 1)).getUTCDay();
+  const len = new Date(Date.UTC(y, mo, 0)).getUTCDate();
+  for (let i = 0; i < first; i++) cal.insertAdjacentHTML("beforeend", '<div class="cell pad"></div>');
+
+  for (let day = 1; day <= len; day++) {
+    const ds = `${m}-${String(day).padStart(2,"0")}`;
+    const r = byDate[ds], ent = D.entries[ds], pend = D.pending[ds];
+    let cls = "cell", body = "", tag = "";
+    if (pend) tag = '<span class="pend"><span class="full">PENDING</span><span class="cmp">&bull;</span></span>';
+
+    if (mode === "pnl" && r) {
+      cls += r.pnl > 0 ? " has up act" : (r.pnl < 0 ? " has dn act" : " has act");
+      body = `<div class="amt">${dual(r.pnl)}</div>` +
+             `<div class="sub">${r.win === null ? "&mdash;" : r.win + "%"} &middot; ${r.n}<span class="posw"> pos</span></div>`;
+    } else if (mode === "evt" && (ent || pend)) {
+      cls += " has act";
+      const chips = (ent || []).map(e => `<span class="chip b">${e.s}</span>`)
+        .concat((pend || []).map(p => `<span class="chip ${p.side === "SELL" ? "s" : "b"}">${p.symbol}</span>`));
+      body = `<div class="chips">${chips.join("")}</div>`;
+    }
+    if (sel === ds) cls += " sel";
+    cal.insertAdjacentHTML("beforeend",
+      `<div class="${cls}" data-d="${ds}"><div class="dhead"><span class="dnum">${day}</span>${tag}</div>${body}</div>`);
+  }
+
+  const inMonth = D.rows.filter(r => r.d.startsWith(m));
+  const sum = inMonth.reduce((a, r) => a + r.pnl, 0);
+  const g = inMonth.filter(r => r.pnl > 0).length, b = inMonth.filter(r => r.pnl < 0).length;
+  const t = D.totals;
+  el("tiles").innerHTML = [
+    ["This month", money(sum), sum >= 0 ? "g" : "r"],
+    ["Month win days", `${g}<span class="sub"> / ${g+b}</span>`, ""],
+    ["Book P&L to date", money(t.pnl), t.pnl >= 0 ? "g" : "r"],
+    ["Return on deployed", (t.ret >= 0 ? "+" : "") + t.ret.toFixed(2) + "%", t.ret >= 0 ? "g" : "r"],
+    ["Green / red sessions", `${t.green} <span class="sub">/ ${t.green + t.red}</span>`, ""],
+    ["Paper positions", String(t.pos), ""],
+  ].map(([k, v, c]) => `<div class="tile"><div class="k">${k}</div><div class="v ${c}">${v}</div></div>`).join("");
+
+  cal.querySelectorAll(".cell.act").forEach(c =>
+    c.onclick = () => { sel = (sel === c.dataset.d ? null : c.dataset.d); draw(); });
+  panel();
+}
+
+function panel() {
+  const p = el("panel");
+  if (!sel) {
+    const t = D.totals;
+    p.innerHTML = `<h3>Select a day</h3><div class="when">Click any coloured session to see which names moved it.</div>
+      <table><tbody>
+      <tr><td>Best session</td><td class="num g">${money(t.best.pnl)}</td><td class="num sub">${t.best.d}</td></tr>
+      <tr><td>Worst session</td><td class="num r">${money(t.worst.pnl)}</td><td class="num sub">${t.worst.d}</td></tr>
+      <tr><td>Capital deployed</td><td class="num">${money(t.cost)}</td><td class="num sub">across ${t.pos} entries</td></tr>
+      <tr><td>Book value</td><td class="num">${money(t.eq)}</td><td class="num sub">at ${D.last_px}</td></tr>
+      </tbody></table>`;
+    return;
+  }
+  const r = byDate[sel], ent = D.entries[sel] || [], pend = D.pending[sel] || [];
+  let h = `<h3>${sel}</h3><div class="when">` +
+    (r ? `${money(r.pnl)} on the session &middot; ${r.n} positions marked &middot; book ${money(r.eq)}`
+       : "No settled prices for this date yet") + `</div>`;
+
+  if (ent.length)
+    h += `<table><thead><tr><th>Opened</th><th class="num">Fill</th><th class="num">Weight</th><th class="num">Score</th></tr></thead><tbody>` +
+      ent.map(e => `<tr><td><b>${e.s}</b></td><td class="num">$${e.px.toFixed(2)}</td>` +
+        `<td class="num">${money(e.d)}</td><td class="num sub">${e.sc ?? "&mdash;"}</td></tr>`).join("") + `</tbody></table>`;
+  if (pend.length)
+    h += `<table><thead><tr><th>Published signal</th><th class="num">Side</th><th class="num">Status</th></tr></thead><tbody>` +
+      pend.map(x => `<tr><td><b>${x.symbol}</b></td><td class="num ${x.side==="SELL"?"r":"g"}">${x.side}</td>` +
+        `<td class="num sub">awaiting prices</td></tr>`).join("") + `</tbody></table>`;
+  if (r && r.det.length)
+    h += `<table style="margin-top:12px"><thead><tr><th>Contributor</th><th class="num">P&L</th><th class="num">Move</th></tr></thead><tbody>` +
+      r.det.map(x => `<tr><td><b>${x.s}</b></td><td class="num ${x.p>=0?"g":"r"}">${money(x.p)}</td>` +
+        `<td class="num ${x.r>=0?"g":"r"}">${x.r>=0?"+":""}${x.r.toFixed(2)}%</td></tr>`).join("") + `</tbody></table>`;
+  if (!ent.length && !pend.length && !(r && r.det.length)) h += `<div class="empty">Nothing recorded for this date.</div>`;
+  p.innerHTML = h;
+}
+
+el("prev").onclick = () => { if (mi > 0) { mi--; sel = null; draw(); } };
+el("next").onclick = () => { if (mi < months.length - 1) { mi++; sel = null; draw(); } };
+el("tPnl").onclick = () => { mode = "pnl"; el("tPnl").setAttribute("aria-selected","true"); el("tEvt").setAttribute("aria-selected","false"); draw(); };
+el("tEvt").onclick = () => { mode = "evt"; el("tEvt").setAttribute("aria-selected","true"); el("tPnl").setAttribute("aria-selected","false"); draw(); };
+draw();
+</script>
+</body>
+</html>
