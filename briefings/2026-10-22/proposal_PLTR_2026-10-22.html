@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset='utf-8'><title>PLTR — proposal</title><style>
+:root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--txt:#e6edf3;--dim:#8b949e;
+--green:#3fb950;--red:#f85149;--amber:#d29922;--blue:#58a6ff;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:24px;max-width:880px;margin:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:16px}
+h1{font-size:20px;margin-bottom:4px} h2{font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.banner{border-radius:8px;padding:14px 18px;font-size:17px;font-weight:700;margin-bottom:16px;border:1px solid}
+.banner.exit{background:#2d1214;border-color:var(--red);color:var(--red)}
+.banner.enter{background:#0f2417;border-color:var(--green);color:var(--green)}
+.banner.hold{background:#1b2030;border-color:var(--blue);color:var(--blue)}
+.banner.wait{background:#251d0e;border-color:var(--amber);color:var(--amber)}
+.banner small{display:block;font-weight:400;font-size:13px;color:var(--txt);margin-top:4px}
+.pillars{display:flex;gap:12px}
+.pillar{flex:1;text-align:center;padding:10px;border:1px solid var(--line);border-radius:6px}
+.pillar .val{font-size:26px;font-weight:700}
+.pillar .val.pos{color:var(--green)}.pillar .val.neg{color:var(--red)}.pillar .val.zero{color:var(--dim)}
+.pillar .name{color:var(--dim);font-size:12px}
+.pillar .det{font-size:11px;color:var(--dim);margin-top:6px}
+.total{margin-top:12px;font-size:15px}
+.flag{display:block;padding:2px 0;font-size:13px}
+.flag.exh{color:var(--amber)}.flag.bear{color:var(--red)}.flag.reb{color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--dim);font-weight:400;font-size:12px;text-transform:uppercase}
+.r{text-align:right}
+.chk-PASS{color:var(--green)}.chk-WARN{color:var(--amber)}.chk-BLOCK{color:var(--red)}.chk-SKIP{color:var(--dim)}
+.confirm{background:#2d1214;border:1px solid var(--red);border-radius:8px;padding:14px 18px;text-align:center;font-weight:700;color:var(--red)}
+.kv{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}
+.kv .k{color:var(--dim)}
+.footer{color:var(--dim);font-size:11px;text-align:center;margin-top:12px}
+</style></head><body><h1>PLTR</h1><div style="color:var(--dim);margin-bottom:14px">1050 bars · pillar total <b>+1</b> / ±6</div><div class="banner enter">► RE-ENTRY (new cycle)<small>Rebound/reversal with healthy EMA structure: likely start of a new bullish cycle. Valid entry trigger. Confirm with candle/volume before entering full size; stop below the rebound pivot. ⚠ Adverse macro: entry in reduced size.</small></div><div class="card"><h2>Three Pillars</h2><div class="pillars"><div class="pillar"><div class="val pos">+2</div><div class="name">Trend</div><div class="det">price&gt;EMA20, EMA20&gt;EMA50, EMA50&gt;EMA200, EMA200↑</div></div><div class="pillar"><div class="val zero">+0</div><div class="name">Momentum</div><div class="det">RSI 59≥55, MACD hist&lt;0, TRIX mixed</div></div><div class="pillar"><div class="val neg">-1</div><div class="name">Macro-Sentiment</div><div class="det">Concentration</div></div></div><div style="margin-top:12px"><span class="flag reb">▲ rebound — MACD histogram crossing bullishly</span><span class="flag reb">▲ rebound — price reclaims EMA20 (closed below 1 bar ago)</span></div></div><div class="card"><h2>Risk (ATR / vol-target)</h2><div class="kv"><span class="k">Suggested stop</span><span>188.24 (6.68% away, 3×ATR chandelier (22-bar))</span></div><div class="kv"><span class="k">ATR-14</span><span>8.23 (4.08%)</span></div><div class="kv"><span class="k">Vol-target size</span><span>24% of sleeve</span></div><div class="kv"><span class="k">Forecast vol (ann.)</span><span>63.7%</span></div><div class="kv"><span class="k">20d z-score</span><span>+0.90σ</span></div><div class="kv"><span class="k">GARCH vol ratio</span><span>1.00× long-run</span></div></div><div class="card"><h2>Macro Regime</h2><div class="kv"><span class="k">Regime</span><span>Concentration</span></div><div class="kv"><span class="k">Composite</span><span>-0.250</span></div><div class="kv"><span class="k">Pillar</span><span>-1 · Adverse macro</span></div><div class="kv"><span class="k">Vol regime (GMM/HMM)</span><span>CALM · p_turb 0.01 · 95 bars</span></div></div><div class="confirm">⛔ NOTHING EXECUTES WITHOUT YOUR EXPLICIT CONFIRMATION — review_*_order simulation first, then approve.</div><div class="footer">agentic-trading-desk · deterministic scripts, human-approved execution</div></body></html>
