@@ -1,0 +1,129 @@
+{
+  "as_of": "2026-10-30",
+  "symbol": "CRWD",
+  "score": 4.0,
+  "premium_cap_dollars": null,
+  "cap_source": "none \u2014 manual purchase in external account",
+  "checks": [
+    {
+      "gate": "signal",
+      "ok": true,
+      "detail": "score=4.0 (need >= 4.0)"
+    },
+    {
+      "gate": "frequency",
+      "ok": true,
+      "detail": "open=0/1 cycle=0/2"
+    },
+    {
+      "gate": "tenor",
+      "ok": true,
+      "detail": "7 call(s) in 35-60 DTE"
+    },
+    {
+      "gate": "moneyness",
+      "ok": true,
+      "detail": "6 candidate(s) (delta 0.25-0.5)"
+    },
+    {
+      "gate": "selection",
+      "ok": true,
+      "detail": "strike 260.0 vs spot 261.15 (delta=0.49939, dte=49) = highest affordable delta"
+    },
+    {
+      "gate": "liquidity",
+      "ok": true,
+      "detail": "OI=1037 (need >= 100), spread=0.65 (limit 2.10)"
+    },
+    {
+      "gate": "cost",
+      "ok": true,
+      "detail": "premium $2135.00/contract vs no cap (manual external purchase)"
+    }
+  ],
+  "status": "PROPOSE",
+  "order": {
+    "side": "buy",
+    "type": "limit",
+    "quantity": 1,
+    "limit_price": 21.02,
+    "option_id": "MASKED",
+    "symbol": "CRWD",
+    "expiration": "2026-12-18",
+    "strike": 260.0,
+    "call_put": "call",
+    "max_risk_dollars": 2135.0
+  },
+  "economics": {
+    "max_loss_dollars": 2102.0,
+    "max_profit": "uncapped (long call)",
+    "breakeven": 281.02,
+    "breakeven_move_pct": 7.61,
+    "prob_itm_at_expiry_upper_bound": 0.499,
+    "take_profit_opt": {
+      "recommended_multiple": 3.0,
+      "recommended_gain_pct": 200.0,
+      "target_underlying": 323.06,
+      "touch_prob": 0.318,
+      "ev_dollars": 1337.95,
+      "grid": [
+        {
+          "multiple": 1.5,
+          "gain_pct": 50.0,
+          "target_underlying": 291.53,
+          "touch_prob": 0.565,
+          "ev_dollars": 594.24
+        },
+        {
+          "multiple": 2.0,
+          "gain_pct": 100.0,
+          "target_underlying": 302.04,
+          "touch_prob": 0.471,
+          "ev_dollars": 990.12
+        },
+        {
+          "multiple": 2.5,
+          "gain_pct": 150.0,
+          "target_underlying": 312.55,
+          "touch_prob": 0.389,
+          "ev_dollars": 1225.96
+        },
+        {
+          "multiple": 3.0,
+          "gain_pct": 200.0,
+          "target_underlying": 323.06,
+          "touch_prob": 0.318,
+          "ev_dollars": 1337.95
+        },
+        {
+          "multiple": 4.0,
+          "gain_pct": 300.0,
+          "target_underlying": 344.08,
+          "touch_prob": 0.208,
+          "ev_dollars": 1314.52
+        }
+      ],
+      "rationale": "take profit at +200% (mark 3x entry, underlying ~$323.06): highest expected capture \u2014 ~32% touch prob x payoff beats stretching for a lower-probability multiple."
+    }
+  },
+  "exits": {
+    "signal": "pillar score < 4.0",
+    "take_profit": "mark >= 3x entry (+200%, underlying ~$323.06): close \u2014 IV-optimized target (~32% touch prob, highest expected capture)",
+    "time": "close at <= 7 DTE",
+    "stop": "mark <= 50% of entry premium"
+  },
+  "contract": {
+    "instrument_id": "MASKED",
+    "expiration_date": "2026-12-18",
+    "strike": 260.0,
+    "type": "call",
+    "bid": 20.7,
+    "ask": 21.35,
+    "mark": 21.025,
+    "delta": 0.49939,
+    "open_interest": 1037,
+    "volume": 58,
+    "iv": 0.662282,
+    "dte": 49
+  }
+}

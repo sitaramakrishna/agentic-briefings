@@ -1,0 +1,79 @@
+{
+  "as_of": "2026-10-30",
+  "account": {
+    "name": "Agentic (cash)",
+    "deploy_target_pct": 100.0
+  },
+  "cycle": {
+    "cycle_index": 0,
+    "cycle_days": 30,
+    "day_in_cycle": 16,
+    "days_remaining": 15,
+    "cycle_start": "2026-10-15",
+    "cycle_end": "2026-11-13",
+    "refresh_today": false
+  },
+  "daily": {
+    "paced_default": 21.85,
+    "monthly_remaining": 327.82,
+    "strong_signal": false,
+    "top_score": 2.0,
+    "spill_score": 4.0,
+    "spill_mult": 2.0,
+    "spilled": 0.0,
+    "earnings_paused": []
+  },
+  "risk": {
+    "breaker": "NORMAL",
+    "sizing_multiplier": 0.75,
+    "blocked": [],
+    "heat": {
+      "used": 0,
+      "cap": 58.31,
+      "available": 58.31,
+      "by_name": {}
+    },
+    "urgent_sells": 0
+  },
+  "stat_bonus": {
+    "applied": []
+  },
+  "regime_tilt": null,
+  "params": {
+    "per_name_cap_pct": 25.0,
+    "min_score": 0.0,
+    "allow_etfs": true,
+    "earnings_pause_days": 3,
+    "vol_weight": true,
+    "vol_power": 1.0,
+    "ref_vol": 0.2322,
+    "excluded_etfs": []
+  },
+  "summary": {
+    "funded": 1,
+    "deployed_target_pct": 25.0,
+    "sells": 0
+  },
+  "buys": [
+    {
+      "symbol": "MSFT",
+      "score": 2.0,
+      "action": "RE-ENTRY (new cycle)",
+      "holding": false,
+      "close": 530.14,
+      "target_weight_pct": 25.0,
+      "target_dollars": 81.95,
+      "current_value": 0.0,
+      "gap_to_target": 81.95,
+      "buy_today_dollars": 16.39,
+      "buy_today_shares": 0.030916,
+      "forecast_vol": 0.2322,
+      "vol_mult": 1.0,
+      "earnings_date": null,
+      "earnings_days": null,
+      "earnings_paused": false,
+      "side": "BUY"
+    }
+  ],
+  "sells": []
+}

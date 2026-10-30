@@ -1,0 +1,84 @@
+{
+  "as_of": "2026-10-30T15:15:00Z",
+  "composite": 0.062,
+  "regime": "Transitional",
+  "pillar_score": 0,
+  "pillar_label": "Neutral macro",
+  "inflationary_flag": false,
+  "spy_tlt_corr": 0.128,
+  "components": [
+    {
+      "name": "Concentration (equal vs cap-weight)",
+      "ratio": "RSP/SPY",
+      "weight": 0.25,
+      "signal": 0.0,
+      "detail": "ratio above SMA200, SMA200 falling",
+      "available": true
+    },
+    {
+      "name": "Yield Curve 10Y-2Y",
+      "ratio": "10Y-2Y",
+      "weight": 0.2,
+      "signal": null,
+      "detail": "",
+      "available": false
+    },
+    {
+      "name": "Credit (high-yield vs IG)",
+      "ratio": "HYG/LQD",
+      "weight": 0.15,
+      "signal": 1.0,
+      "detail": "ratio above SMA200, SMA200 rising",
+      "available": true
+    },
+    {
+      "name": "Size factor (small vs large)",
+      "ratio": "IWM/SPY",
+      "weight": 0.15,
+      "signal": -1.0,
+      "detail": "ratio below SMA200, SMA200 falling",
+      "available": true
+    },
+    {
+      "name": "Equity vs Bond (SPY/TLT)",
+      "ratio": "SPY/TLT",
+      "weight": 0.15,
+      "signal": 1.0,
+      "detail": "ratio above SMA200, SMA200 rising",
+      "available": true
+    },
+    {
+      "name": "Sector rotation (cyclical vs defensive)",
+      "ratio": "XLY/XLP",
+      "weight": 0.1,
+      "signal": -1.0,
+      "detail": "ratio below SMA200, SMA200 falling",
+      "available": true
+    }
+  ],
+  "notes": [
+    "No yield_spread: redistributing the 20% weight of the curve among other components."
+  ],
+  "stat_regime": {
+    "state": "calm",
+    "state_source": "hmm",
+    "hmm_state": "calm",
+    "p_turbulent": 0.0162,
+    "bars_in_state": 98,
+    "shock": false,
+    "shock_z": -0.6557,
+    "shock_sigma": 2.5,
+    "latest_return": -0.0038,
+    "calm_vol_annual": 0.1113,
+    "turbulent_vol_annual": 0.3924,
+    "calm_mean_annual": 0.2931,
+    "turbulent_mean_annual": -1.0042,
+    "em_iters": 200
+  },
+  "disinversion": {
+    "active": false,
+    "event_date": null,
+    "day": 0,
+    "window": 126
+  }
+}
